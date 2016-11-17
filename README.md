@@ -16,4 +16,4 @@ All spark logs are going into the spark.log.
 2. In the value of `libraryDependencies` change "compile" to "provided"
 3. specify the main class in value of `mainClass in assembly`
 4. run `sbt assembly` 
-NOTE: for compiling the file in IntelliJ revert "compil" to "provided" in `libraryDependencies`
+  NOTE: for compiling the file in IntelliJ revert "compil" to "provided" in `libraryDependencies`
