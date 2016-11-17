@@ -13,7 +13,7 @@ class Array2Vector(override val uid: String)
   def this() = this(Identifiable.randomUID("arrayToVector"))
 
   override protected def createTransformFunc: WrappedArray[String] => Vector = {
-    (p1: WrappedArray[String]) => {Vectors.dense(p1.array.map { x => x.toDouble })}
+    (p1: WrappedArray[String]) => {Vectors.dense(p1.array.map { x => x.replaceAll("\"", "").toDouble })}
   }
 
   override protected def outputDataType: VectorType = {

@@ -18,31 +18,36 @@ case class Instance(label: Double, features: Vector)
 
 object Helper {
   def rmse(labelsAndPreds: RDD[(Double, Double)]): Double = {
-    ???
+    val sqrErr:Double = labelsAndPreds.map(row=>scala.math.pow((row._1-row._2),2)).reduce((a,b)=> a+b)
+    val meanSqrError:Double = sqrErr/labelsAndPreds.count()
+    val rmse:Double = scala.math.pow(meanSqrError,0.5)
+    rmse
   }
 
   def predictOne(weights: Vector, features: Vector): Double = {
-    ???
+    VectorHelper.dot(weights,features)
   }
 
   def predict(weights: Vector, data: RDD[Instance]): RDD[(Double, Double)] = {
-    ???
+    data.map(instance=>(instance.label,VectorHelper.dot(instance.features,weights)))
   }
 }
 
 class MyLinearRegressionImpl(override val uid: String)
-    extends MyLinearRegression[Vector, MyLinearRegressionImpl, MyLinearModelImpl] {
+  extends MyLinearRegression[Vector, MyLinearRegressionImpl, MyLinearModelImpl] {
 
   def this() = this(Identifiable.randomUID("mylReg"))
 
   override def copy(extra: ParamMap): MyLinearRegressionImpl = defaultCopy(extra)
 
   def gradientSummand(weights: Vector, lp: Instance): Vector = {
-    ???
+    val calculatedValue:Double = VectorHelper.dot(weights,lp.features)
+    val error:Double = calculatedValue - lp.label
+    VectorHelper.dot(lp.features,error)
   }
 
   def gradient(d: RDD[Instance], weights: Vector): Vector = {
-    ???
+    d.map(instance=>gradientSummand(weights,instance)).reduce((v1,v2)=>VectorHelper.sum(v1,v2))
   }
 
   def linregGradientDescent(trainData: RDD[Instance], numIters: Int): (Vector, Array[Double]) = {
@@ -77,9 +82,9 @@ class MyLinearRegressionImpl(override val uid: String)
 
     val instances: RDD[Instance] = dataset.select(
       col($(labelCol)), col($(featuresCol))).rdd.map {
-        case Row(label: Double, features: Vector) =>
-          Instance(label, features)
-      }
+      case Row(label: Double, features: Vector) =>
+        Instance(label, features)
+    }
 
     val (weights, trainingError) = linregGradientDescent(instances, numIters)
     new MyLinearModelImpl(uid, weights, trainingError)
@@ -87,12 +92,12 @@ class MyLinearRegressionImpl(override val uid: String)
 }
 
 class MyLinearModelImpl(override val uid: String, val weights: Vector, val trainingError: Array[Double])
-    extends MyLinearModel[Vector, MyLinearModelImpl] {
+  extends MyLinearModel[Vector, MyLinearModelImpl] {
 
   override def copy(extra: ParamMap): MyLinearModelImpl = defaultCopy(extra)
 
   def predict(features: Vector): Double = {
-    println("Predicting")
+    //println("Predicting")
     val prediction = Helper.predictOne(weights, features)
     prediction
   }
