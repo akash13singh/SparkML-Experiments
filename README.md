@@ -10,9 +10,10 @@ The sbt eclipse command makes sure your project can now be correctly imported in
 
 All spark logs are going into the spark.log.
 
-#Creating JAR
-1) open file build.sbt
-2) In the value of `libraryDependencies` change "compile" to "provided"
-3) specify the main class in value of `mainClass in assembly`
-4) run `sbt assembly` 
+##Creating JAR:
+
+1. open file build.sbt
+2. In the value of `libraryDependencies` change "compile" to "provided"
+3. specify the main class in value of `mainClass in assembly`
+4. run `sbt assembly` 
 NOTE: for compiling the file in IntelliJ revert "compil" to "provided" in `libraryDependencies`
